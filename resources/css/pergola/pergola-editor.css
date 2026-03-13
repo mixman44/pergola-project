@@ -1,0 +1,275 @@
+/* ── Variables de couleurs ─────────────────────────────── */
+:root
+{
+    --col-dark:     #13313D;              /* vert foncé Batiman   */
+    --col-green:    #8DC73F;              /* vert vif Batiman  */
+    --col-white:    #FFFFFF;              /* blanc pur          */
+    --col-light:    #F4F7F4;              /* fond de la zone canvas               */
+    --col-border:   rgba(255,255,255,.10);
+    --col-input-bg: rgba(255,255,255,.06);
+    --col-muted:    rgba(255,255,255,.45);
+    --radius:    8px;
+    --radius-sm: 5px;
+    --transition: 0.18s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* 1. LAYOUT PRINCIPAL*/
+.pergola-editor {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--col-light);
+}
+
+/* 2. SIDEBAR GAUCHE (320 px fixe) */
+.pg-sidebar {
+    width: 320px;
+    min-width: 320px;
+    background: var(--col-dark);
+    color: var(--col-white);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 10;
+    box-shadow: 4px 0 20px rgba(0,0,0,.35);
+}
+.pg-sidebar::-webkit-scrollbar { width: 4px; }
+.pg-sidebar::-webkit-scrollbar-thumb {
+    background: var(--col-green); border-radius: 4px;
+}
+
+/* En-tête logo */
+.pg-sidebar-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--col-border);
+}
+
+.pg-sidebar-sub {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--col-green);
+}
+.pg-sidebar-title {
+    font-size: 20px; font-weight: 700; color: var(--col-white);
+}
+
+/* Corps scrollable */
+
+.pg-sidebar-body {
+    flex: 1; padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 6px;
+}
+
+/* Pied de sidebar */
+.pg-sidebar-footer {
+    padding: 16px 20px 20px;
+    border-top: 1px solid var(--col-border);
+}
+
+/* 3. BLOCS ACCORDÉON */
+.ctrl-block {
+    background: var(--col-input-bg);
+    border: 1px solid var(--col-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+.ctrl-block-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    cursor: pointer; user-select: none;
+    transition: background var(--transition);
+}
+.ctrl-block-header:hover { background: rgba(141,199,63,.08); }
+
+.ctrl-block-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--col-white);
+}
+
+.ctrl-block-chevron {
+    font-size: 10px; color: var(--col-muted);
+    transition: transform var(--transition);
+}
+.ctrl-block.is-open .ctrl-block-chevron { transform: rotate(180deg); }
+
+.ctrl-block-body {
+    padding: 14px;
+    border-top: 1px solid var(--col-border);
+    display: none;
+}
+.ctrl-block.is-open .ctrl-block-body { display: block; }
+
+/* 4. COMPOSANTS FORMULAIRE*/
+
+/* Select */
+.ctrl-select-wrap { position: relative; }
+.ctrl-select {
+    width: 100%;
+    padding: 9px 34px 9px 12px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: var(--radius-sm);
+    color: var(--col-white);
+    font-size: 13px;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color var(--transition);
+}
+.ctrl-select:focus { outline: none; border-color: var(--col-green); }
+.ctrl-select option { background: var(--col-dark); color: var(--col-white); }
+.ctrl-select-arrow {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--col-green); font-size: 12px; pointer-events: none;
+}
+
+/* Sliders */
+.ctrl-sliders { display: flex; flex-direction: column; gap: 18px; }
+.ctrl-slider-header {
+    display: flex; align-items: center; gap: 6px; margin-bottom: 7px;
+}
+.ctrl-slider-label { font-size: 12px; color: var(--col-muted); flex: 1; }
+
+.ctrl-slider {
+    width: 100%; height: 4px;
+    appearance: none;
+    background: rgba(255,255,255,.12);
+    border-radius: 4px; cursor: pointer;
+    accent-color: var(--col-green);
+}
+.ctrl-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px; height: 16px;
+    background: var(--col-green);
+    border-radius: 50%; border: 2px solid var(--col-dark);
+    cursor: grab; transition: transform var(--transition);
+}
+.ctrl-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
+
+/* Upload fichier */
+.ctrl-file-label {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,.04);
+    border: 1px dashed rgba(141,199,63,.4);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition), border-color var(--transition);
+    margin-bottom: 10px;
+}
+.ctrl-file-label:hover {
+    background: rgba(141,199,63,.08); border-color: var(--col-green);
+}
+.ctrl-file-icon {
+    width: 28px; height: 28px;
+    background: rgba(141,199,63,.18);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--col-green); font-size: 14px; flex-shrink: 0;
+}
+.ctrl-file-text {
+    font-size: 12px; color: var(--col-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ctrl-file-input { display: none; }
+
+/* Boutons */
+.ctrl-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 10px 16px;
+    border: none; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background var(--transition), transform var(--transition);
+}
+.ctrl-btn:active { transform: scale(.98); }
+.ctrl-btn--primary { background: var(--col-green); color: var(--col-dark); }
+.ctrl-btn--primary:hover { background: #7cb535; }
+.ctrl-btn--secondary {
+    background: transparent; color: var(--col-green);
+    border: 1px solid rgba(141,199,63,.5);
+}
+.ctrl-btn--secondary:hover {
+    background: rgba(141,199,63,.08); border-color: var(--col-green);
+}
+
+/* Bouton principal Générer */
+.pg-generate-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 14px;
+    background: var(--col-green); color: var(--col-dark);
+    border: none; border-radius: var(--radius);
+    font-size: 14px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+    box-shadow: 0 4px 16px rgba(141,199,63,.3);
+}
+.pg-generate-btn:hover {
+    background: #7cb535; box-shadow: 0 6px 22px rgba(141,199,63,.45);
+}
+.pg-generate-btn:active { transform: scale(.98); }
+
+/* ═══════════════════════════════════════════════════════
+   5. ZONE CANVAS DROITE
+   ═══════════════════════════════════════════════════════ */
+.pg-main {
+    flex: 1;
+    display: flex; flex-direction: column;
+    background: var(--col-light); overflow: hidden;
+}
+
+.canvas-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .08em;
+    color: var(--col-dark);
+}
+.canvas-label-dot {
+    width: 8px; height: 8px;
+    background: var(--col-green); border-radius: 50%;
+    animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(141,199,63,.5); }
+    50%      { box-shadow: 0 0 0 6px rgba(141,199,63,0); }
+}
+.canvas-hint { font-size: 11px; color: #9aaa9a; }
+
+.canvas-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.canvas-container {
+    flex: 1; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background-color: #000;
+}
+#canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 40px rgba(19,49,61,.15);
+    display: block;
+}
+.canvas-placeholder {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px; color: #B0BDB5; pointer-events: none;
+}
+
+.canvas-placeholder p { font-size: 14px; text-align: center; line-height: 1.6; }
+
+/* 6. RESPONSIVE */
+@media (max-width: 900px) {
+    .pergola-editor { flex-direction: column; height: auto; }
+    .pg-sidebar { width: 100%; min-width: unset; max-height: 60vh; }
+    .pg-main { min-height: 50vh; }
+}
+

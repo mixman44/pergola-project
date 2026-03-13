@@ -4,5 +4,8 @@ namespace App\Ai\Prompts;
 
 interface PromptInterface
 {
-    public function getPrompt(): string;
+    /**
+     * done le promt que on va utilisé
+     */
+    public static function getPrompt(): string;
 }

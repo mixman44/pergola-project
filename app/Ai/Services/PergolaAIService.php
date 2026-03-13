@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Ai\Services;
-
 use App\Ai\Agents\PergolaAnalyzer;
-use App\Ai\Prompts\PromptsManageur;
-use Laravel\Ai\Exceptions\FailoverableException;
 use Laravel\Ai\Image;
 use Laravel\Ai\Responses\ImageResponse;
+use App\Ai\Prompts\GeneratePergolaPrompt;
+use App\Ai\Prompts\GeneratePergola2ImagesPrompt;
+use App\Ai\Prompts\DescribePergolaPrompt;
+use Laravel\Ai\Files\Image as AiImage;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Service de gestion de l'IA pour l'analyse et la génération de pergolas.
@@ -17,14 +19,7 @@ use Laravel\Ai\Responses\ImageResponse;
  */
 class PergolaAIService
 {
-    /**
-     * Agent responsable de l'analyse et de la description textuelle des pergolas.
-     */
-    private PergolaAnalyzer $agent;
-    /**
-     * Gestionnaire des prompts utilisés par le service.
-     */
-    private PromptsManageur $prompts;
+
 
     /**
      * Modèle Gemini utilisé pour la génération d'images.
@@ -32,12 +27,12 @@ class PergolaAIService
     private string $currentImageModel = 'gemini-2.5-flash-image';
 
     /**
-     * Initialise le service avec l'agent et le gestionnaire de prompts.
+     * Initialise le service avec l'agent et le gestionnaire de prompts
+     * @param PergolaAnalyzer $agent
      */
-    public function __construct()
+    public function __construct(private PergolaAnalyzer $agent)
     {
-        $this->agent = new PergolaAnalyzer();
-        $this->prompts = new PromptsManageur();
+
     }
 
     /**
@@ -60,18 +55,22 @@ class PergolaAIService
         return $this->currentImageModel;
     }
 
-
-    /**
-     * Génère une image de pergola à partir d'une images de référence.
-     *
-     * @param  array  $images L'images de référence a fournir au modèle
-     * @return ImageResponse La réponse contenant l'image générée
-     *
-     * @throws FailoverableException Si le provider Gemini est indisponible
-     */
-    public function generateImage(array $images):  ImageResponse
+    public function generate( AiImage $imageA, ?AiImage $imageB = null, ?string $description = null ): string
     {
-        return Image::of($this->prompts->generatePergolaPrompt())
+        if ($imageB !== null)
+        {
+            // Mode 2 images
+            $prompt = GeneratePergola2ImagesPrompt::getPrompt();
+            $images = [$imageA, $imageB];
+
+        } else
+        {
+            // Mode 1 image
+            $prompt = GeneratePergolaPrompt::getPrompt($description);
+            $images = [$imageA];
+        }
+
+        $response = Image::of($prompt)
             ->attachments($images)
             ->quality('high')
             ->landscape()
@@ -79,26 +78,9 @@ class PergolaAIService
                 provider: 'gemini',
                 model: $this->currentImageModel,
             );
-    }
 
-    /**
-     * Génère une image de pergola en combinant deux images de référence.
-     *
-     * @param  array  $images Les deux images de référence à combiner
-     * @return ImageResponse La réponse contenant l'image générée
-     *
-     * @throws FailoverableException Si le provider Gemini est indisponible
-     */
-    public function generatePergolaFrom2Images(array $images):  ImageResponse
-    {
-        return Image::of($this->prompts->generatePergolaFrom2ImagesPrompt())
-            ->attachments($images)
-            ->quality('high')
-            ->landscape()
-            ->generate(
-                provider: 'gemini',
-                model: $this->currentImageModel,
-            );
+        $imageContent = (string) $response;  // Bytes de l'image (méthode correcte du SDK)
+        return base64_encode($imageContent);  // Retourne le base64 pur
     }
 
     /**
@@ -106,14 +88,11 @@ class PergolaAIService
      *
      * @param  array  $images L'image de la pergola à analyser
      */
-    public function describePergola(array $images) :void
+    public function describePergola(AiImage $image) : string
     {
-        $rep = $this->agent->promptModel($this->prompts->describePergolaPrompt(), $images);
-        $this->prompts->chengePergolaDescription((string) $rep);
+        $images = [$image];
+        $rep = $this->agent->promptModel(DescribePergolaPrompt::getPrompt(), $images);
+        return (string) $rep;
     }
 
-    public function resetPergolaDescription(): void
-    {
-        $this->prompts->resetPergolaDescription();
-    }
 }

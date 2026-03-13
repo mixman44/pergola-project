@@ -4,7 +4,7 @@ namespace App\Ai\Prompts;
 
 class GeneratePergola2ImagesPrompt implements PromptInterface
 {
-    public function getPrompt(): string
+    public static function getPrompt(): string
     {
         return
             "You are an architectural visualization AI working in strict photo-realistic image editing mode.\n" .

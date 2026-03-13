@@ -4,7 +4,7 @@ namespace App\Ai\Prompts;
 
 class DescribePergolaPrompt implements PromptInterface
 {
-    public function getPrompt(): string
+    public static function getPrompt(): string
     {
        return
            "You are an architectural visualization AI specialized in photo-realistic visual analysis.\n" .

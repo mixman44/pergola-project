@@ -2,27 +2,24 @@
 
 namespace App\Ai\Prompts;
 
-class GeneratePergolaPrompt implements PromptInterface
+class   GeneratePergolaPrompt implements PromptInterface
 {
-    private string $description =
-        "- Type: free-standing pergola (autoportée)\n" .
-        "- Shape: rectangle\n" .
-        "- Structure:\n" .
-        "  - STRICTLY FOUR vertical posts\n" .
-        "  - NO additional posts, supports or columns\n" .
-        "  - horizontal beams connecting the four posts\n" .
-        "  - open slatted roof (clear-voie)\n" .
-        "- Material: aluminum\n" .
-        "- Color: anthracite grey (RAL 4401)\n" .
-        "- Finish: matte architectural outdoor finish\n";
-
-    public function setDescription(string $description): void
+    public static function getPrompt(?string $description = null): string
     {
-        $this->description = $description;
-    }
-
-    public function getPrompt(): string
-    {
+        if (is_null($description))
+        {
+            $description =
+                "- Type: free-standing pergola (autoportée)\n" .
+                "- Shape: rectangle\n" .
+                "- Structure:\n" .
+                "  - STRICTLY FOUR vertical posts\n" .
+                "  - NO additional posts, supports or columns\n" .
+                "  - horizontal beams connecting the four posts\n" .
+                "  - open slatted roof (clear-voie)\n" .
+                "- Material: aluminum\n" .
+                "- Color: anthracite grey (RAL 4401)\n" .
+                "- Finish: matte architectural outdoor finish\n";
+        }
         return
             "You are an architectural visualization AI working in photo-realistic image editing mode.\n\n" .
 
@@ -43,7 +40,7 @@ class GeneratePergolaPrompt implements PromptInterface
             "The pergola MUST match the RED shape EXACTLY.\n\n" .
 
             "Pergola specification:\n" .
-            $this->description . "\n" .
+            $description . "\n" .
 
             "ABSOLUTE CONSTRAINTS:\n" .
             "- DO NOT change camera angle or perspective\n" .
